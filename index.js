@@ -11,5 +11,8 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 
 app.use("/api/gpt3", gpt3);
 
+app.get('/',  (req, res) => {
+  res.send('success')
+})
 const PORT = process.env.PORT || 8100;
 app.listen(PORT, () => console.log(`Server is running in port ${PORT}`));
