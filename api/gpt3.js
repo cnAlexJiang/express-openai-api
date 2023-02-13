@@ -7,6 +7,18 @@ const configuration = new Configuration({
 })
 const openai = new OpenAIApi(configuration)
 
+router.get('/test', async (req, res) => {
+  try {
+    res.json({
+      status: 200,
+      message: 'success',
+    })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).send('Server error')
+  }
+})
+
 router.post('/ask', async (req, res) => {
   console.log(req.body.content, typeof req.body, JSON.stringify(req.body))
   try {
@@ -30,7 +42,6 @@ router.post('/ask', async (req, res) => {
           stop: ['\n'],
         })
         .then((response) => {
-  
           const data = response.data
           const temp = lodash.get(data, 'choices[0].text')
           if (temp) {
@@ -38,7 +49,6 @@ router.post('/ask', async (req, res) => {
               status: 200,
               message: temp,
             })
-
           } else {
             res.json({
               status: -1,
@@ -47,7 +57,6 @@ router.post('/ask', async (req, res) => {
           }
         })
     }
-
   } catch (error) {
     console.error(error)
     return res.status(500).send('Server error')
