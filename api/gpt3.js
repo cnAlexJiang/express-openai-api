@@ -3,7 +3,7 @@ const router = express.Router()
 const { Configuration, OpenAIApi } = require('openai')
 const lodash = require('lodash')
 const configuration = new Configuration({
-  apiKey: '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',
+  apiKey: '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',
 })
 const openai = new OpenAIApi(configuration)
 
@@ -14,7 +14,7 @@ router.get('/test', async (req, res) => {
       message: 'success',
     })
   } catch (error) {
-    console.error(error)
+    console.error('catch error' ,error)
     return res.status(500).send('Server error')
   }
 })
@@ -30,35 +30,32 @@ router.post('/ask', async (req, res) => {
         message: 'error',
       })
     } else {
-      openai
-        .createCompletion({
-          model: 'text-davinci-003',
-          prompt: content + ' \nA',
-          temperature: 0,
-          max_tokens: 100,
-          top_p: 1,
-          frequency_penalty: 0,
-          presence_penalty: 0,
-          stop: ['\n'],
+      const response = await openai.createCompletion({
+        model: 'text-davinci-003',
+        prompt: content + ' \nA',
+        temperature: 0,
+        max_tokens: 100,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+        stop: ['\n'],
+      })
+      const data = response.data
+      const temp = lodash.get(data, 'choices[0].text')
+      if (temp) {
+        res.json({
+          status: 200,
+          message: temp,
         })
-        .then((response) => {
-          const data = response.data
-          const temp = lodash.get(data, 'choices[0].text')
-          if (temp) {
-            res.json({
-              status: 200,
-              message: temp,
-            })
-          } else {
-            res.json({
-              status: -1,
-              message: 'error',
-            })
-          }
+      } else {
+        res.json({
+          status: -1,
+          message: 'error',
         })
+      }
     }
   } catch (error) {
-    console.error(error)
+    console.error('catch error' ,error)
     return res.status(500).send('Server error')
   }
 })
